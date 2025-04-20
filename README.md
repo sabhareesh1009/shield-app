@@ -1,6 +1,6 @@
-# Sheild
+# Shield
 
-sheild - calender project
+shield - calendar project
 
 ## Tech Stack
 
