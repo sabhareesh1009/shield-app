@@ -20,7 +20,6 @@ import { CustomDateRangePickerProps, DateRange, TimezoneOption } from '../../typ
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PublicIcon from '@mui/icons-material/Public';
 
-// Define timezone options
 const TIMEZONE_OPTIONS: TimezoneOption[] = [
   { label: 'Asia/Calcutta (GMT+5:30)', value: 'Asia/Calcutta', offset: '+5:30' },
   { label: 'Asia/Dubai (GMT+4)', value: 'Asia/Dubai', offset: '+4' },
@@ -78,7 +77,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
   // Handle date range selection
   const handleRangeSelection = (startDate: Date, endDate: Date) => {
     setSelectedRange({ startDate, endDate });
-    onRangeSelection(startDate, endDate, timezone);
   };
 
   // Handle timezone change
@@ -89,7 +87,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     const newOffset = TIMEZONE_OPTIONS.find(tz => tz.value === newTimezone)?.offset || '+0';
     setTimezoneOffset(newOffset);
     
-    // Notify parent component about the change
     if (selectedRange.startDate && selectedRange.endDate) {
       onRangeSelection(selectedRange.startDate, selectedRange.endDate, newTimezone);
     }
@@ -126,7 +123,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
       )}
       
       <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-        {/* Date Range Display */}
         <TextField
           variant="outlined"
           size={textfieldSize}
@@ -155,7 +151,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
           }}
         />
         
-        {/* Timezone Selector */}
         <FormControl variant="outlined" size={textfieldSize} sx={{ width: "300px" }}>
           <InputLabel>Timezone</InputLabel>
           <Select
@@ -178,7 +173,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
         </FormControl>
       </Box>
       
-      {/* Date Range Picker Popover */}
       <Popover
         open={isPickerOpen}
         anchorEl={anchorEl}

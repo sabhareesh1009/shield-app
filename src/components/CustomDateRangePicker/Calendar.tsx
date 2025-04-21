@@ -4,7 +4,6 @@ import {
   Typography,
   IconButton,
   Grid,
-  Tooltip,
   useTheme,
   TextField
 } from '@mui/material';
@@ -116,13 +115,6 @@ const Calendar: React.FC<CalendarProps> = ({
 
   // Check if a date should be disabled
   const isDateDisabled = (date: Date): boolean => {
-    // Check if date is in the DATE_MESSAGES and disabled
-    const dateString = format(date, 'yyyy-MM-dd');
-    if (DATE_MESSAGES[dateString]?.disabled) {
-      return true;
-    }
-    
-    // Check if date is more than MAX_PAST_DAYS days in the past
     const minAllowedDate = new Date();
     minAllowedDate.setDate(minAllowedDate.getDate() - MAX_PAST_DAYS);
     return isBefore(date, minAllowedDate);
@@ -223,7 +215,6 @@ const Calendar: React.FC<CalendarProps> = ({
 
   return (
     <Box sx={{ width: '100%', maxWidth: 350, borderRadius: 2, overflow: 'hidden' }}>
-      {/* Calendar header */}
       <Box 
         display="flex" 
         justifyContent="space-between" 
@@ -247,7 +238,6 @@ const Calendar: React.FC<CalendarProps> = ({
         </IconButton>
       </Box>
       
-      {/* Days of week header */}
       <Box sx={{ p: 1, backgroundColor: theme.palette.background.paper }}>
         <Grid container spacing={0}>
           {DAYS_OF_WEEK.map((day) => (
@@ -269,7 +259,6 @@ const Calendar: React.FC<CalendarProps> = ({
         </Grid>
       </Box>
       
-      {/* Calendar grid */}
       <Box sx={{ p: 1, backgroundColor: theme.palette.background.paper }}>
         {calendarGrid.map((week, weekIndex) => (
           <Grid container spacing={0} key={weekIndex}>
@@ -294,7 +283,6 @@ const Calendar: React.FC<CalendarProps> = ({
               const isDisabled = isDateDisabled(date);
               const inRange = isInRange(date);
               const rangeEdge = isRangeEdge(date);
-              const dateMessage = DATE_MESSAGES[dateString];
               const isToday = isSameDay(date, new Date());
               
               // Determine if this date is in the first or last position of its week
@@ -315,7 +303,6 @@ const Calendar: React.FC<CalendarProps> = ({
                     alignItems: 'center',
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
                     position: 'relative',
-                    // Special styling for range
                     ...(inRange && !isRangeStart && !isRangeEnd && {
                       backgroundColor: theme.palette.primary.light,
                       opacity: 0.6,
@@ -330,7 +317,6 @@ const Calendar: React.FC<CalendarProps> = ({
                         zIndex: -1,
                       }
                     }),
-                    // Special styling for range edges
                     ...(isRangeStart && {
                       '&::before': {
                         content: '""',
@@ -357,7 +343,6 @@ const Calendar: React.FC<CalendarProps> = ({
                         zIndex: -1,
                       }
                     }),
-                    // Don't show the range background if it's at the edge of a week
                     ...((isRangeStart && isLastInWeek) && {
                       '&::before': { display: 'none' }
                     }),
@@ -386,7 +371,7 @@ const Calendar: React.FC<CalendarProps> = ({
                       borderRadius: '50%',
                       backgroundColor: (() => {
                         if (isRangeStart || isRangeEnd) {
-                          return theme.palette.primary.main;
+                          return theme.palette.primary.light;
                         }
                         if (isToday) {
                           return theme.palette.action.selected;
@@ -395,10 +380,10 @@ const Calendar: React.FC<CalendarProps> = ({
                       })(),
                       color: (() => {
                         if (isRangeStart || isRangeEnd) {
-                          return theme.palette.primary.contrastText;
+                          return theme.palette.common.white;
                         }
                         if (inRange) {
-                          return theme.palette.primary.dark;
+                          return theme.palette.common.white;
                         }
                         if (isDisabled) {
                           return theme.palette.text.disabled;
@@ -421,11 +406,7 @@ const Calendar: React.FC<CalendarProps> = ({
               
               return (
                 <Grid item xs={12/7} key={dateString}>
-                  {dateMessage ? (
-                    <Tooltip title={dateMessage.message} arrow placement="top">
-                      {cellContent}
-                    </Tooltip>
-                  ) : cellContent}
+                  {cellContent}
                 </Grid>
               );
             })}
@@ -433,7 +414,6 @@ const Calendar: React.FC<CalendarProps> = ({
         ))}
       </Box>
       
-      {/* Selected range display */}
       <Box 
         sx={{ 
           p: 2, 

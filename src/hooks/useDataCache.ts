@@ -23,11 +23,9 @@ export function useDataCache<T>() {
     }));
   }, []);
 
-  // Function to get data from cache by key
   const getCachedData = useCallback((key: string): T | null => {
     const cacheItem = cache[key];
     
-    // If no cache item exists or it's expired, return null
     if (!cacheItem || Date.now() > cacheItem.expiry) {
       return null;
     }
@@ -35,12 +33,10 @@ export function useDataCache<T>() {
     return cacheItem.data;
   }, [cache]);
 
-  // Function to clear the entire cache
   const clearCache = useCallback(() => {
     setCache({});
   }, []);
 
-  // Function to remove a specific item from cache
   const removeCacheItem = useCallback((key: string) => {
     setCache(prevCache => {
       const newCache = { ...prevCache };

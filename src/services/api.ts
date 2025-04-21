@@ -12,12 +12,9 @@ const api = axios.create({
 // Function to fetch data for a specific date range
 export const fetchDataForDateRange = async (startDate: string, endDate: string): Promise<DataItem[]> => {
   try {
-    // Fetch data from the dummyjson endpoint
     const response = await api.get('/users');
     const users = response?.data?.users || [];
     
-    // Parse the dates to create a range
-    // Convert from dd/mm/yyyy format if needed
     const parseDate = (dateStr: string) => {
       if (dateStr.includes('/')) {
         const [day, month, year] = dateStr.split('/');
