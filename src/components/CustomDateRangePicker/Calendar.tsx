@@ -9,7 +9,7 @@ import {
   TextField
 } from '@mui/material';
 import { format, isAfter, isBefore, isSameDay, differenceInDays, isWithinInterval } from 'date-fns';
-import { CalendarProps } from './types';
+import { CalendarProps } from '../../types/types';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';

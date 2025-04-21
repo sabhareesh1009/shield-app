@@ -31,7 +31,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 type Order = 'asc' | 'desc';
-type SortableColumns = 'id' | 'date' | 'title' | 'status';
+type SortableColumns = keyof Pick<DataItem, 'id' | 'employee' | 'date' | 'position' | 'location' | 'status'>;
 
 interface EnhancedDataTableProps {
   data: DataItem[];
@@ -45,7 +45,7 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
   const theme = useTheme();
   const [filteredData, setFilteredData] = useState<DataItem[]>(data);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchColumn, setSearchColumn] = useState<keyof DataItem>('title');
+  const [searchColumn, setSearchColumn] = useState<keyof DataItem>('employee');
   const [orderBy, setOrderBy] = useState<SortableColumns>('date');
   const [order, setOrder] = useState<Order>('desc');
   const [favorites, setFavorites] = useState<Record<number, boolean>>({});
@@ -117,13 +117,19 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
       const bValue = b[orderBy];
 
       if (order === 'asc') {
-        if (aValue < bValue) return -1;
-        if (aValue > bValue) return 1;
-        return 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return aValue.localeCompare(bValue);
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return aValue - bValue;
+        }
+        return String(aValue).localeCompare(String(bValue));
       } else {
-        if (aValue > bValue) return -1;
-        if (aValue < bValue) return 1;
-        return 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return bValue.localeCompare(aValue);
+        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return bValue - aValue;
+        }
+        return String(bValue).localeCompare(String(aValue));
       }
     });
   };
@@ -194,11 +200,10 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
                 }
               }}
             >
-              <MenuItem value="id">ID</MenuItem>
+              <MenuItem value="employee">Employee</MenuItem>
+              <MenuItem value="location">Location</MenuItem>
               <MenuItem value="date">Date</MenuItem>
-              <MenuItem value="title">Title</MenuItem>
-              <MenuItem value="description">Description</MenuItem>
-              <MenuItem value="status">Status</MenuItem>
+              <MenuItem value="position">Position</MenuItem>
             </Select>
           </FormControl>
           <Tooltip title="Filter options">
@@ -242,19 +247,22 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
                   </TableSortLabel>
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
-                  Employee
-                </TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
                   <TableSortLabel
-                    active={orderBy === 'title'}
-                    direction={orderBy === 'title' ? order : 'asc'}
-                    onClick={() => handleRequestSort('title')}
+                    active={orderBy === 'employee'}
+                    direction={orderBy === 'employee' ? order : 'asc'}
+                    onClick={() => handleRequestSort('employee')}
                   >
-                    Position
+                    Employee
                   </TableSortLabel>
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
-                  Contact
+                  <TableSortLabel
+                    active={orderBy === 'position'}
+                    direction={orderBy === 'position' ? order : 'asc'}
+                    onClick={() => handleRequestSort('position')}
+                  >
+                    Position
+                  </TableSortLabel>
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
                   <TableSortLabel
@@ -262,14 +270,20 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
                     direction={orderBy === 'date' ? order : 'asc'}
                     onClick={() => handleRequestSort('date')}
                   >
-                    Start date
+                    Date
                   </TableSortLabel>
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
                   Last activity
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
-                  Location
+                  <TableSortLabel
+                    active={orderBy === 'location'}
+                    direction={orderBy === 'location' ? order : 'asc'}
+                    onClick={() => handleRequestSort('location')}
+                  >
+                    Location
+                  </TableSortLabel>
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.secondary, py: 1.5 }}>
                   Files
@@ -290,12 +304,13 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
             </TableHead>
             <TableBody>
               {sortedData.map((item: DataItem, index) => {
-                // Generate some mock data based on the existing data
-                const name = item.title.split(' ').slice(0, 2).join(' ');
-                const email = name.toLowerCase().replace(' ', '.') + '@example.com';
-                const position = ['CEO', 'CFO', 'CTO', 'Designer', 'Developer', 'Marketing', 'HR'][index % 7];
-                const location = ['Paris', 'New York', 'London', 'Tokyo', 'Berlin', 'Sydney'][index % 6];
-                const files = Math.floor(Math.random() * 5) + 1;
+                // Use employee name from the data
+                const name = item.employee;
+                // Parse and format date for display
+                const dateParts = item.date.split('/');
+                const formattedDate = dateParts.length === 3 ? 
+                  `${dateParts[0]} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][parseInt(dateParts[1])-1]} ${dateParts[2]}` :
+                  item.date;
                 
                 return (
                   <TableRow 
@@ -323,28 +338,23 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <Typography variant="body2" sx={{ fontWeight: 'medium', color: theme.palette.text.primary }}>
-                        {position}
+                        {item.position}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {email}
-                      </Typography>
+                      <Typography variant="body2">{formattedDate}</Typography>
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
-                      <Typography variant="body2">{item.date}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ py: 1.5 }}>
-                      <Typography variant="body2">{item.date}</Typography>
+                      <Typography variant="body2">{formattedDate}</Typography>
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <Box display="flex" alignItems="center" gap={0.5}>
                         <LocationOnIcon fontSize="small" color="disabled" />
-                        <Typography variant="body2">{location}</Typography>
+                        <Typography variant="body2">{item.location}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
-                      <Typography variant="body2">{files}</Typography>
+                      <Typography variant="body2">{item.files}</Typography>
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <IconButton 
@@ -362,15 +372,15 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
                         sx={{
                           borderRadius: '4px',
                           backgroundColor: 
-                            item.status === 'Completed' ? '#e6f7ed' :
+                            item.status === 'Active' ? '#e6f7ed' :
                             item.status === 'Pending' ? '#fff8e6' :
-                            item.status === 'In Progress' ? '#e3f2fd' :
-                            '#ffebee',
+                            item.status === 'Inactive' ? '#ffebee' :
+                            '#e3f2fd',
                           color: 
-                            item.status === 'Completed' ? '#1e8e3e' :
+                            item.status === 'Active' ? '#1e8e3e' :
                             item.status === 'Pending' ? '#f9a825' :
-                            item.status === 'In Progress' ? '#1976d2' :
-                            '#d32f2f',
+                            item.status === 'Inactive' ? '#d32f2f' :
+                            '#1976d2',
                           fontWeight: 500,
                           fontSize: '0.75rem',
                           px: 1,
@@ -386,15 +396,21 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
       ) : (
         <Box 
           display="flex" 
-          justifyContent="center" 
+          flexDirection="column" 
           alignItems="center" 
-          height={200} 
-          bgcolor="background.paper"
-          borderRadius={1}
-          border={`1px solid ${theme.palette.divider}`}
+          justifyContent="center" 
+          py={6}
+          sx={{ 
+            border: `1px dashed ${theme.palette.divider}`,
+            borderRadius: 1,
+            bgcolor: theme.palette.background.default
+          }}
         >
-          <Typography variant="body1" color="text.secondary">
-            No data found matching your search criteria
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            No results found
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Try adjusting your search or filter to find what you're looking for.
           </Typography>
         </Box>
       )}

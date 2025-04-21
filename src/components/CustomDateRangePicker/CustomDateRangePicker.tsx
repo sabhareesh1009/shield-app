@@ -14,9 +14,9 @@ import {
   SelectChangeEvent,
   InputAdornment
 } from '@mui/material';
-import { format, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import Calendar from './Calendar';
-import { CustomDateRangePickerProps, DateRange, TimezoneOption } from './types';
+import { CustomDateRangePickerProps, DateRange, TimezoneOption } from '../../types/types';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PublicIcon from '@mui/icons-material/Public';
 
@@ -61,8 +61,16 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     const { startDate, endDate } = selectedRange;
     if (!startDate || !endDate) return '';
     
-    const formattedStart = format(startDate, 'dd MMM yyyy');
-    const formattedEnd = format(endDate, 'dd MMM yyyy');
+    // Format dates in dd/MM/yyyy format
+    const formatDate = (date: Date) => {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+    
+    const formattedStart = formatDate(startDate);
+    const formattedEnd = formatDate(endDate);
     
     return `${formattedStart} - ${formattedEnd} GMT${timezoneOffset}`;
   };

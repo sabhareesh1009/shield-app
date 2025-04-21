@@ -39,24 +39,18 @@ const DataDashboard: React.FC = () => {
     // Fetch new data
     setLoading(true);
     try {
-      // Format dates with timezone for API request
-      const formattedStartDate = format(startDate, "yyyy-MM-dd HH:mm:ss");
-      const formattedEndDate = format(endDate, "yyyy-MM-dd HH:mm:ss");
+      // Format dates with timezone for API request in dd/mm/yyyy format
+      const formatDate = (date: Date) => {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
       
-      // Get timezone offset from timezone string
-      let timezoneOffset = '';
-      if (timezone === 'Asia/Calcutta') timezoneOffset = '+0530';
-      else if (timezone === 'Asia/Dubai') timezoneOffset = '+0400';
-      else if (timezone === 'Europe/Moscow') timezoneOffset = '+0300';
-      else if (timezone === 'Europe/London') timezoneOffset = '+0000';
-      else if (timezone === 'America/New_York') timezoneOffset = '-0500';
-      else if (timezone === 'America/Los_Angeles') timezoneOffset = '-0800';
+      const formattedStartDate = formatDate(startDate);
+      const formattedEndDate = formatDate(endDate);
       
-      // Add timezone offset to formatted dates
-      const startDateWithTz = `${formattedStartDate} ${timezoneOffset}`;
-      const endDateWithTz = `${formattedEndDate} ${timezoneOffset}`;
-      
-      const newData = await fetchDataForDateRange(startDateWithTz, endDateWithTz);
+      const newData = await fetchDataForDateRange(formattedStartDate, formattedEndDate);
       
       // Cache the result
       setCachedData(cacheKey, newData);

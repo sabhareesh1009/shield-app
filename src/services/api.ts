@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { DataItem } from '../types/types';
+import { DataItem } from '../types';
 
-// Create an axios instance with default configuration
+// Create an axios instance with default config
 const api = axios.create({
-  baseURL: 'https://jsonplaceholder.typicode.com',
+  baseURL: 'https://dummyjson.com/c/da7a-e621-496e-9322',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -12,50 +12,54 @@ const api = axios.create({
 // Function to fetch data for a specific date range
 export const fetchDataForDateRange = async (startDate: string, endDate: string): Promise<DataItem[]> => {
   try {
-    // Since JSONPlaceholder doesn't have date-based filtering, we'll fetch posts
-    // and then transform them to match our data structure with random dates in the range
-    const response = await api.get('/posts');
+    // Fetch data from the dummyjson endpoint
+    const response = await api.get('/users');
+    const users = response?.data?.users || [];
     
     // Parse the dates to create a range
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    // Convert from dd/mm/yyyy format if needed
+    const parseDate = (dateStr: string) => {
+      if (dateStr.includes('/')) {
+        const [day, month, year] = dateStr.split('/');
+        return new Date(`${year}-${month}-${day}`);
+      }
+      return new Date(dateStr);
+    };
+    
+    const start = parseDate(startDate);
+    const end = parseDate(endDate);
+
     
     // Transform the data to match our DataItem interface
-    const transformedData: DataItem[] = response.data.slice(0, 20).map((post: any, index: number) => {
+    const transformedData: DataItem[] = users.map((user: any) => {
       // Generate a random date within the selected range
       const randomDate = new Date(
         start.getTime() + Math.random() * (end.getTime() - start.getTime())
       );
       
-      // Format the date as YYYY-MM-DD
-      const formattedDate = randomDate.toISOString().split('T')[0];
+      // Format the date as dd/mm/yyyy
+      const day = randomDate.getDate().toString().padStart(2, '0');
+      const month = (randomDate.getMonth() + 1).toString().padStart(2, '0');
+      const year = randomDate.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
       
-      // Generate a random status
-      const statuses = ['Pending', 'Completed', 'In Progress', 'Cancelled'];
-      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-      
+
       return {
-        id: post.id,
+        id: user.id,
+        employee: user.employee,
+        position: user.position,
         date: formattedDate,
-        title: post.title.slice(0, 30),
-        description: post.body.slice(0, 100),
-        status: randomStatus
+        location: user.location,
+        files: user.files,
+        status: user.status
       };
     });
-    
-    // Sort by date
-    transformedData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     return transformedData;
   } catch (error) {
     console.error('Error fetching data:', error);
-    throw error;
+    return [];
   }
-};
-
-// Function to simulate API error (for testing)
-export const simulateApiError = async (): Promise<never> => {
-  throw new Error('Simulated API error');
 };
 
 export default api;
