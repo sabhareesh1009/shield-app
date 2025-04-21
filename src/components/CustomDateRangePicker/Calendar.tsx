@@ -17,13 +17,6 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-// Define date messages for specific dates
-const DATE_MESSAGES: Record<string, { message: string; disabled: boolean }> = {
-  '2025-04-25': { message: 'Holiday - No data available', disabled: false },
-  '2025-04-30': { message: 'End of month - Limited data', disabled: false },
-  '2025-05-01': { message: 'New month - Fresh data', disabled: false },
-};
-
 // Maximum past days allowed for selection
 const MAX_PAST_DAYS = 90;
 
@@ -153,8 +146,6 @@ const Calendar: React.FC<CalendarProps> = ({
         endDate,
         selecting: false
       });
-      
-      // Notify parent component
       onSelection(startDate, endDate);
     }
   };

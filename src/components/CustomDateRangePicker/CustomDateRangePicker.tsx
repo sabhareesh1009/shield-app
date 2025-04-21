@@ -43,6 +43,11 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
   // Default date range: 7 days ago to today
   const defaultStartDate = subDays(new Date(), 7);
   const defaultEndDate = new Date();
+
+  const [currentDateRange, setCurrentDateRange] = useState<DateRange>({
+    startDate: defaultStartDate,
+    endDate: defaultEndDate
+  });
   
   const [selectedRange, setSelectedRange] = useState<DateRange>({
     startDate: defaultStartDate,
@@ -76,7 +81,7 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
 
   // Handle date range selection
   const handleRangeSelection = (startDate: Date, endDate: Date) => {
-    setSelectedRange({ startDate, endDate });
+    setCurrentDateRange({ startDate, endDate });
   };
 
   // Handle timezone change
@@ -102,14 +107,16 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
 
   // Handle closing the date picker
   const handleClosePicker = () => {
+    setCurrentDateRange({ startDate: defaultStartDate, endDate: defaultEndDate });
     setAnchorEl(null);
     setIsPickerOpen(false);
   };
   
   // Handle apply button click
   const handleApply = () => {
-    if (selectedRange.startDate && selectedRange.endDate) {
-      onRangeSelection(selectedRange.startDate, selectedRange.endDate, timezone);
+    if (currentDateRange.startDate && currentDateRange.endDate) {
+      setSelectedRange(currentDateRange);
+      onRangeSelection(currentDateRange.startDate, currentDateRange.endDate, timezone);
       handleClosePicker();
     }
   };

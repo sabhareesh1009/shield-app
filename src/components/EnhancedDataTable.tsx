@@ -231,7 +231,7 @@ const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({ data, loading }) 
             boxShadow: 'none',
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: 1,
-            overflow: 'hidden'
+            overflowX: 'auto'
           }}
         >
           <Table sx={{ minWidth: 650 }}>
