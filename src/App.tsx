@@ -9,10 +9,10 @@ function App() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Container maxWidth="lg">
         <Box sx={{ my: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
+          <Typography variant="h4" component="h1" gutterBottom align="center"  sx={{ mb: 3, fontWeight: 'bold', color: 'primary.main' }}>
             Shield Data Dashboard
           </Typography>
-          <Paper elevation={3} sx={{ p: 3 }}>
+          <Paper elevation={3}>
             <DataDashboard />
           </Paper>
         </Box>

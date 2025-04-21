@@ -52,3 +52,12 @@ export interface CacheItem<T> {
   timestamp: number;
   expiry: number;
 }
+
+export interface ColumnDefinition<T> {
+  id: keyof T;
+  label: string;
+  sortable?: boolean;
+  width?: string | number;
+  align?: 'left' | 'center' | 'right';
+  renderCell?: (item: T) => React.ReactNode;
+}

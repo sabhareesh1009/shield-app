@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Alert, Typography, Card, CardContent } from '@mui/material';
 import { format, subDays } from 'date-fns';
 import { fetchDataForDateRange } from '../services';
-import { DataItem } from '../types';
+import { ColumnDefinition, DataItem } from '../types';
 import { useDataCache } from '../hooks';
 import CustomDateRangePicker from './CustomDateRangePicker';
-import EnhancedDataTable from './EnhancedDataTable';
+import DataTable from './DataTable';
 
 const DataDashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 7));
@@ -75,6 +75,21 @@ const DataDashboard: React.FC = () => {
     setTimezone(tz);
   };
 
+  // Define columns for the DataTable
+  const columns: ColumnDefinition<DataItem>[] = [
+    { id: 'id', label: 'ID', sortable: true },
+    { id: 'employee', label: 'Employee', sortable: true },
+    { id: 'position', label: 'Position', sortable: true },
+    { id: 'date', label: 'Date', sortable: true },
+    { id: 'date', label: 'Last Activity' },
+    { id: 'location', label: 'Location', sortable: true },
+    { id: 'files', label: 'Files' },
+    { id: 'status', label: 'Status', sortable: true },
+  ];
+
+  // Define searchable columns
+  const searchableColumns: Array<keyof DataItem> = ['employee', 'location', 'date', 'position'];
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'primary.main' }}>
@@ -105,9 +120,15 @@ const DataDashboard: React.FC = () => {
               Data Results
             </Typography>
           </Box>
-          <EnhancedDataTable 
+          <DataTable 
             data={data} 
-            loading={loading} 
+            columns={columns}
+            loading={loading}
+            initialSortBy="date"
+            initialSortDirection="desc"
+            searchableColumns={searchableColumns}
+            defaultSearchColumn="employee"
+            enableFavorites={true}
           />
         </CardContent>
       </Card>
